@@ -6,6 +6,7 @@ import os
 # preload
 load_dotenv()
 
+from tgbot.services.db import db_session
 import tgbot
 from tgbot import filters, handlers
 from bot import dp
@@ -26,6 +27,7 @@ def start():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
+    db_session.global_init()
     executor.start_polling(dp, on_shutdown=on_shutdown, on_startup=on_startup)
 
 

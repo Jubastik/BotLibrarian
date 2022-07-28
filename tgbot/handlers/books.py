@@ -6,7 +6,7 @@ from tgbot.handlers.menu import query_menu
 from tgbot.keyboards.inline.markup import get_markup_my_books, get_markup_go_to_menu, get_markup_save_genres, \
     get_markup_user_menu, get_markup_save_book
 from tgbot.services.db.methods import get_my_books, save_book
-from tgbot.services.scripts import update_msg, Book
+from tgbot.services.scripts import update_msg, MyBook
 
 
 @dp.callback_query_handler(state=UserMenu.Menu, text='my_books')
@@ -17,8 +17,8 @@ async def handler_my_books(call: CallbackQuery):
 
     text = [f'Ваши книги: \n id/Название/автор/жанр/записка']
     for book in res.data:
-        text.append(f'{book[0]}, {book[1]}, {book[2]}, {book[3]}')
-    text = '\n'.join(text)
+        text.append(f'{book.id}, {book.title}, {book.author}, {";".join(book.genres)}, {book.note}')
+    text = '\n---------------------------\n'.join(text)
     await update_msg(text, get_markup_my_books(), call)
 
     await call.answer()
@@ -29,7 +29,7 @@ async def handler_add_book_init(call: CallbackQuery):
     await AddBook.Title.set()
     FSMContext = dp.current_state(user=call.from_user.id)
     async with FSMContext.proxy() as FSMdata:
-        FSMdata["book"] = Book()
+        FSMdata["book"] = MyBook(call.from_user.id)
     text = 'Введите название книги'
     await update_msg(text, get_markup_go_to_menu(), call)
     await call.answer()
@@ -92,7 +92,7 @@ async def handler_save_genres(call: CallbackQuery):
     await UserMenu.Menu.set()
     FSMContext = dp.current_state(user=call.from_user.id)
     async with FSMContext.proxy() as FSMdata:
-        res = await save_book(call.from_user.id, FSMdata["book"])
+        res = await save_book(FSMdata["book"])
         await res.check_correctness(call)
     await call.answer()
     await query_menu(call)
