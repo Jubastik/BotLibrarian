@@ -12,3 +12,4 @@ class AddBook(StatesGroup):
     Author = State()
     Genre = State()
     Note = State()
+    Finish = State()

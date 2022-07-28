@@ -38,3 +38,10 @@ def get_markup_save_genres() -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
     return keyboard
+
+def get_markup_save_book() -> InlineKeyboardMarkup:
+    buttons = [InlineKeyboardButton(text='Сохранить', callback_data='save_book'),
+               InlineKeyboardButton(text='Отмена', callback_data='menu')]
+    keyboard = InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*buttons)
+    return keyboard
