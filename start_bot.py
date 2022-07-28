@@ -23,10 +23,18 @@ async def on_shutdown(dp):
 
 
 def start():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-    )
+    if os.getenv('SERVER_MODE', 'False') == 'True':
+        logging.basicConfig(
+            filename="logfile.log",
+            filemode="w",
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        )
+    else:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        )
     db_session.global_init()
     executor.start_polling(dp, on_shutdown=on_shutdown, on_startup=on_startup)
 
