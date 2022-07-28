@@ -19,14 +19,15 @@ async def register_user(tg_id: int, tg_name: str) -> Response:
 
 async def get_my_books(tg_id: int) -> Response:
     db_sess = db_session.create_session()
-    books = db_sess.query(Book).filter(Book.user_id == tg_id).all()
+    books = db_sess.query(Book).filter(User.tg_id == tg_id).all()
     list_of_books = []
     for book in books:
         # Сортировка по значимости жанра в данной книги
         genres = sorted([[g.genre.name, g.weight] for g in book.genres_m], key=lambda x: x[1])
         genres = [g[0] for g in genres]
-        b = MyBook(book.user_id, book.id, book.title, book.author, genres, book.note)
+        b = MyBook(book.user_id, book.user.tg_name, book.id, book.title, book.author, genres, book.note)
         list_of_books.append(b)
+    db_sess.close()
     return Response(True, list_of_books)
 
 
@@ -38,18 +39,20 @@ async def get_bookshelf() -> Response:
         # Сортировка по значимости жанра в данной книги
         genres = sorted([[g.genre.name, g.weight] for g in book.genres_m], key=lambda x: x[1])
         genres = [g[0] for g in genres]
-        b = MyBook(book.user_id, book.id, book.title, book.author, genres, book.note)
+        b = MyBook(book.user_id, book.user.tg_name, book.id, book.title, book.author, genres, book.note)
         list_of_books.append(b)
+    db_sess.close()
     return Response(True, list_of_books)
 
 
 async def save_book(book: MyBook) -> Response:
     db_sess = db_session.create_session()
+    user_id = db_sess.query(User.id).filter(User.tg_id == book.tg_id).first()[0]
     bd_book = Book(
         title=book.title,
         author=book.author,
         note=book.note,
-        user_id=book.tg_id,
+        user_id=user_id,
     )
     db_sess.add(bd_book)
     db_sess.flush()

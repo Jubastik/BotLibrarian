@@ -13,9 +13,9 @@ async def handler_bookshelf(call: CallbackQuery):
     res = await get_bookshelf()
     await res.check_correctness(call)
 
-    text = [f'Книжная полка: \n id/Название/автор/жанр/записка']
+    text = [f'Книжная полка: \n Даритель/Название/автор/жанр/записка']
     for book in res.data:
-        text.append(f'{book.id}, {book.title}, {book.author}, {";".join(book.genres)}, {book.note}')
+        text.append(f'{book.tg_name}, {book.title}, {book.author}, {";".join(book.genres)}, {book.note}')
     text = '\n---------------------------\n'.join(text)
     await update_msg(text, get_markup_bookshelf(), call)
     await call.answer()
