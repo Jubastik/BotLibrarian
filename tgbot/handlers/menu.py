@@ -14,12 +14,17 @@ async def handler_menu(msg: Message):
     await FSMContext.finish()
     await UserMenu.Menu.set()
     async with FSMContext.proxy() as FSMdata:
-        msg = await msg.answer("Привет", reply_markup=get_markup_user_menu())
+        msg = await msg.answer(
+            "Привет! Используй <b> Мои книги </b> если хочешь поделиться книгой, "
+            "а если хочешь получить книгу используй <b> Книжная полка </b>.",
+            reply_markup=get_markup_user_menu())
         FSMdata["main_msg_id"] = msg.message_id
 
 
 @dp.callback_query_handler(state="*", text="menu")
 async def query_menu(call: CallbackQuery):
     await UserMenu.Menu.set()
-    await update_msg("Привет", get_markup_user_menu(), call)
+    await update_msg("Привет! Используй <b> Мои книги </b> если хочешь поделиться книгой, "
+                     "а если хочешь получить книгу используй <b> Книжная полка </b>.",
+                     get_markup_user_menu(), call)
     await call.answer()

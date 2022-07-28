@@ -23,7 +23,7 @@ class Book(SqlAlchemyBase):
     title = sqlalchemy.Column(sqlalchemy.String)
     author = sqlalchemy.Column(sqlalchemy.String)
     note = sqlalchemy.Column(sqlalchemy.String)
-    genres_m = orm.relationship("BookGenres")
+    genres_m = orm.relationship("BookGenres", cascade="all, delete-orphan")
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("user.id"))
     user = orm.relationship("User", back_populates="books")
 

@@ -9,7 +9,8 @@ class Response:
 
     async def check_correctness(self, call):
         if not self.success:
-            FSMContext = dp.current_state(user=call.from_user.id)
-            await FSMContext.finish()
-            await call.answer('Что-то пошло не так...')
+            await call.answer('Что-то пошло не так... ' + " ".join(self.data))
             await UserMenu.Menu.set()
+
+    async def get_data(self):
+        return self.data

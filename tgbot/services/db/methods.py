@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from tgbot.services.db import db_session
 from tgbot.services.db.scripts import Response
 from tgbot.services.db.sql_models import User, Genre, Book, BookGenres
@@ -19,7 +17,7 @@ async def register_user(tg_id: int, tg_name: str) -> Response:
 
 async def get_my_books(tg_id: int) -> Response:
     db_sess = db_session.create_session()
-    books = db_sess.query(Book).filter(User.tg_id == tg_id).all()
+    books = db_sess.query(Book).join('user').filter(User.tg_id == tg_id).all()
     list_of_books = []
     for book in books:
         # Сортировка по значимости жанра в данной книги
@@ -70,3 +68,15 @@ async def save_book(book: MyBook) -> Response:
     db_sess.commit()
     db_sess.close()
     return Response(True, [str(book)])
+
+
+async def del_book(tg_id: int, book_id: int) -> Response:
+    db_sess = db_session.create_session()
+    book = db_sess.query(Book).filter(Book.id == book_id).first()
+    if book.user.tg_id != tg_id:
+        db_sess.close()
+        return Response(False, ['Вы не можете удалить эту книгу'])
+    db_sess.delete(book)
+    db_sess.commit()
+    db_sess.close()
+    return Response(True, [])

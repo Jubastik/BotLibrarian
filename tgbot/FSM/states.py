@@ -13,3 +13,8 @@ class AddBook(StatesGroup):
     Genre = State()
     Note = State()
     Finish = State()
+
+
+class DelBook(StatesGroup):
+    Init = State()
+    Delete = State()
