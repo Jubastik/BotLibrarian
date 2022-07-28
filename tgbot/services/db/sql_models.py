@@ -28,7 +28,7 @@ class Book(SqlAlchemyBase):
     user = orm.relationship("User", back_populates="books")
 
     def __repr__(self):
-        return f"<Book> {self.id} {self.title} {self.author} {self.note} {self.genres}"
+        return f"<Book> {self.id} {self.title} {self.author} {self.note}"
 
 
 class BookGenres(SqlAlchemyBase):

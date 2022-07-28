@@ -5,8 +5,6 @@ from tgbot.services.db.scripts import Response
 from tgbot.services.db.sql_models import User, Genre, Book, BookGenres
 from tgbot.services.scripts import MyBook
 
-temp_book = [1233, 'Война и мир', 'Толстой', ['Роман', 'Детектив'], 'Описание книги']
-
 
 async def register_user(tg_id: int, tg_name: str) -> Response:
     db_sess = db_session.create_session()
@@ -67,6 +65,5 @@ async def save_book(book: MyBook) -> Response:
         db_sess.add(BookGenres(weight=num, book_id=bd_book.id,
                                genre_id=genre_id))
     db_sess.commit()
-    print("ура" + str(bd_book))
     db_sess.close()
     return Response(True, [str(book)])
