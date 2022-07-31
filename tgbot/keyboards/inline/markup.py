@@ -26,6 +26,19 @@ def get_markup_bookshelf() -> InlineKeyboardMarkup:
     return keyboard
 
 
+def get_markup_add_genre_bookshelf(genres: list) -> InlineKeyboardMarkup:
+    AddGenreData = CallbackData('add_genre_to_bookshelf', 'genre_name')
+    buttons = []
+    for genre in genres:
+        buttons.append(InlineKeyboardButton(text=genre.capitalize(), callback_data=AddGenreData.new(genre_name=genre)))
+    keyboard = InlineKeyboardMarkup(row_width=4)
+    keyboard.add(InlineKeyboardButton(text="Все жанры", callback_data=AddGenreData.new(genre_name="all")))
+    keyboard.add(*buttons)
+    keyboard.add(InlineKeyboardButton(text='Показать книги', callback_data='show_bookshelf'))
+    keyboard.add(InlineKeyboardButton(text='Меню', callback_data='menu'))
+    return keyboard
+
+
 def get_markup_del_book(books: list) -> InlineKeyboardMarkup:
     DelBookData = CallbackData('del_book', 'book_id')
     buttons = []
@@ -33,7 +46,7 @@ def get_markup_del_book(books: list) -> InlineKeyboardMarkup:
         buttons.append(InlineKeyboardButton(text=book.title, callback_data=DelBookData.new(book_id=book.id)))
     keyboard = InlineKeyboardMarkup(row_width=4)
     keyboard.add(*buttons)
-    keyboard.add(InlineKeyboardButton(text='Отмена', callback_data='menu'))
+    keyboard.add(InlineKeyboardButton(text='Меню', callback_data='menu'))
     return keyboard
 
 

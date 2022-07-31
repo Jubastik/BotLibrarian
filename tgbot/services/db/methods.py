@@ -29,9 +29,22 @@ async def get_my_books(tg_id: int) -> Response:
     return Response(True, list_of_books)
 
 
-async def get_bookshelf() -> Response:
+async def get_all_genres() -> Response:
     db_sess = db_session.create_session()
-    books = db_sess.query(Book).all()
+    genres = db_sess.query(Genre.name).all()
+    list_of_genres = [g[0] for g in genres]
+    db_sess.close()
+    return Response(True, list_of_genres)
+
+
+async def get_bookshelf(genres: list) -> Response:
+    db_sess = db_session.create_session()
+    if 'all' in genres:
+        books = db_sess.query(Book).all()
+    else:
+        books = db_sess.query(Book).join(BookGenres).join(Genre).filter(Genre.name.in_(genres)).all()
+    if len(books) == 0:
+        return Response(False, ['Книг не найдено'])
     list_of_books = []
     for book in books:
         # Сортировка по значимости жанра в данной книги

@@ -11,7 +11,7 @@ class MyBook:
         self.id = id
         self.title = title
         self.author = author
-        self.genres = genres
+        self.genres = set(genres)
         self.note = note
 
     async def add_title(self, title: str):
@@ -23,7 +23,7 @@ class MyBook:
         return True
 
     async def add_genre(self, genre: str):
-        self.genres.append(genre.lower())
+        self.genres.add(genre.lower())
         return True
 
     async def add_note(self, note: str):
