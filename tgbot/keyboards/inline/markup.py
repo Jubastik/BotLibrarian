@@ -27,12 +27,13 @@ def get_markup_bookshelf() -> InlineKeyboardMarkup:
 
 
 def get_markup_add_genre_bookshelf(genres: list) -> InlineKeyboardMarkup:
-    AddGenreData = CallbackData('add_genre_to_bookshelf', 'genre_name')
+    AddGenreData = CallbackData('add_genre_to_bookshelf', 'genre_id')
     buttons = []
     for genre in genres:
-        buttons.append(InlineKeyboardButton(text=genre.capitalize(), callback_data=AddGenreData.new(genre_name=genre)))
+        buttons.append(
+            InlineKeyboardButton(text=genre[1].capitalize(), callback_data=AddGenreData.new(genre_id=genre[0])))
     keyboard = InlineKeyboardMarkup(row_width=4)
-    keyboard.add(InlineKeyboardButton(text="Все жанры", callback_data=AddGenreData.new(genre_name="all")))
+    keyboard.add(InlineKeyboardButton(text="Все жанры", callback_data=AddGenreData.new(genre_id="all")))
     keyboard.add(*buttons)
     keyboard.add(InlineKeyboardButton(text='Показать книги', callback_data='show_bookshelf'))
     keyboard.add(InlineKeyboardButton(text='Меню', callback_data='menu'))

@@ -4,7 +4,7 @@ from bot import dp, bot
 from tgbot.FSM.states import UserMenu, Bookshelf
 from tgbot.handlers.menu import query_menu
 from tgbot.keyboards.inline.markup import get_markup_my_books, get_markup_bookshelf, get_markup_add_genre_bookshelf
-from tgbot.services.db.methods import get_bookshelf, get_all_genres
+from tgbot.services.db.methods import get_bookshelf, get_all_genres, get_genre_name
 from tgbot.services.scripts import update_msg
 
 
@@ -26,15 +26,22 @@ async def handler_init_bookshelf(call: CallbackQuery):
 
 @dp.callback_query_handler(state=Bookshelf.Init, text_contains='add_genre_to_bookshelf')
 async def handler_add_genre_to_bookshelf(call: CallbackQuery):
-    genre = call.data.split(':')[1]
+    genre_id = call.data.split(':')[1]
+    if genre_id == 'all':
+        genre_name = 'all'
+    else:
+        res = await get_genre_name(int(genre_id))
+        await res.check_correctness(call)
+        genre_name = await res.get_data()
+        genre_name = genre_name[0]
     FSMContext = dp.current_state(user=call.from_user.id)
     async with FSMContext.proxy() as FSMdata:
-        if genre not in FSMdata['current_genres']:
-            FSMdata['current_genres'].append(genre)
+        if (genre_id, genre_name) not in FSMdata['current_genres']:
+            FSMdata['current_genres'].append((genre_id, genre_name))
         else:
-            FSMdata['current_genres'].remove(genre)
+            FSMdata['current_genres'].remove((genre_id, genre_name))
         text = f'Выберите подходящие вам жанры. Так же вы можете выбрать все жанры \n ' \
-               f'Выбранные жанры: {"; ".join(FSMdata["current_genres"])}'
+               f'Выбранные жанры: {"; ".join([_[1] for _ in FSMdata["current_genres"]])}'
         await update_msg(text, get_markup_add_genre_bookshelf(FSMdata['all_genres']), call)
 
 
