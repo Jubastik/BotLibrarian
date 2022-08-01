@@ -15,9 +15,11 @@ async def handler_my_books(call: CallbackQuery):
     res = await get_my_books(call.from_user.id)
     await res.check_correctness(call)
 
-    text = [f'Ваши книги: \n id/Название/автор/жанр/записка']
+    text = [f'Ваши книги:']
     for book in res.data:
-        text.append(f'{book.id}, {book.title}, {book.author}, {";".join(book.genres)}, {book.note}')
+        text.append(
+            f'ID: {book.id} \nНазвание: {book.title} \nАвтор: {book.author} \n'
+            f'Жанры: {";".join(book.genres)} \nЗаписка для получателя: {book.note}')
     text = '\n---------------------------\n'.join(text)
     await update_msg(text, get_markup_my_books(), call)
 

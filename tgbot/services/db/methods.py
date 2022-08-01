@@ -44,7 +44,7 @@ async def get_bookshelf(genres: list) -> Response:
     else:
         books = db_sess.query(Book).join(BookGenres).join(Genre).filter(Genre.name.in_(genres)).all()
     if len(books) == 0:
-        return Response(False, ['Книг не найдено'])
+        return Response(False, ['Книги не найдено'])
     list_of_books = []
     for book in books:
         # Сортировка по значимости жанра в данной книги
