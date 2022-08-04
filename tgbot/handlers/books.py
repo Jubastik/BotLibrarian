@@ -4,7 +4,7 @@ from bot import dp, bot
 from tgbot.FSM.states import UserMenu, AddBook, DelBook
 from tgbot.handlers.menu import query_menu
 from tgbot.keyboards.inline.markup import get_markup_my_books, get_markup_go_to_menu, get_markup_save_genres, \
-    get_markup_user_menu, get_markup_save_book, get_markup_del_book
+    get_markup_save_book, get_markup_del_book
 from tgbot.services.db.methods import get_my_books, save_book, del_book
 from tgbot.services.scripts import update_msg, MyBook
 
@@ -78,7 +78,7 @@ async def handler_add_title(msg: Message):
 async def handler_add_author(msg: Message):
     await AddBook.Genre.set()
     FSMContext = dp.current_state(user=msg.from_user.id)
-    text = 'Введите жанры книги'
+    text = 'Введите жанры книги по одному. После добавления всех жанров нажми "Сохранить"'
     async with FSMContext.proxy() as FSMdata:
         await FSMdata["book"].add_author(msg.text)
         msg = await msg.answer(text, reply_markup=get_markup_save_genres())
@@ -96,7 +96,7 @@ async def handler_add_genre(msg: Message):
 async def handler_save_genres(call: CallbackQuery):
     await AddBook.Note.set()
     FSMContext = dp.current_state(user=call.from_user.id)
-    text = 'Оставьте пожелания'
+    text = 'Оставьте записку для получателя'
     msg = await bot.send_message(call.message.chat.id, text)
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = msg.message_id
@@ -110,7 +110,9 @@ async def handler_add_note(msg: Message):
     FSMContext = dp.current_state(user=msg.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         await FSMdata["book"].add_note(msg.text)
-        text = f'Все ли верно? \n {FSMdata["book"]}'
+        text = f'Все ли верно? \nНазвание: {FSMdata["book"].title} ' \
+               f'\nАвтор: {FSMdata["book"].author} \nЖанры: {";".join(FSMdata["book"].genres)}' \
+               f' \nЗаписка: {FSMdata["book"].note}'
         msg = await msg.answer(text, reply_markup=get_markup_save_book())
         FSMdata["main_msg_id"] = msg.message_id
 
