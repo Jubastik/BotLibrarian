@@ -1,6 +1,6 @@
 import sqlalchemy
 from sqlalchemy import orm
-from sqlalchemy.orm import Session
+from sqlalchemy_utils import auto_delete_orphans
 
 from . import db_session
 from .db_session import SqlAlchemyBase
@@ -11,6 +11,7 @@ class User(SqlAlchemyBase):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     tg_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=False)
     tg_name = sqlalchemy.Column(sqlalchemy.String)
+    tg_username = sqlalchemy.Column(sqlalchemy.String)
     books = orm.relationship("Book", back_populates="user")
 
     def __repr__(self):
@@ -23,7 +24,7 @@ class Book(SqlAlchemyBase):
     title = sqlalchemy.Column(sqlalchemy.String)
     author = sqlalchemy.Column(sqlalchemy.String)
     note = sqlalchemy.Column(sqlalchemy.String)
-    genres_m = orm.relationship("BookGenres", cascade="all, delete-orphan")
+    genres_m = orm.relationship("BookGenres", cascade="all, delete")
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("user.id"))
     user = orm.relationship("User", back_populates="books")
 
@@ -37,7 +38,7 @@ class BookGenres(SqlAlchemyBase):
     weight = sqlalchemy.Column(sqlalchemy.Integer)
     book_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("book.id"), nullable=False)
     genre_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("genre.id"), nullable=False)
-    genre = orm.relationship("Genre", viewonly=True)
+    genre = orm.relationship("Genre", backref='bg')
 
 
 class Genre(SqlAlchemyBase):
@@ -47,3 +48,6 @@ class Genre(SqlAlchemyBase):
 
     def __repr__(self):
         return f"<Genre> {self.id} {self.name}"
+
+
+auto_delete_orphans(BookGenres.genre)

@@ -4,10 +4,11 @@ from bot import dp, bot
 
 
 class MyBook:
-    def __init__(self, tg_id: int, tg_name: str = None, id: int = None, title: str = None, author: str = None,
-                 genres: list = [], note: str = None):
+    def __init__(self, tg_id: int, id: int = None, title: str = None, author: str = None,
+                 genres: list = [], note: str = None, tg_name: str = None, tg_username: str = None):
         self.tg_id = tg_id
         self.tg_name = tg_name
+        self.tg_username = tg_username
         self.id = id
         self.title = title
         self.author = author

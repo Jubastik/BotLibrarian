@@ -13,7 +13,7 @@ from tgbot.services.scripts import update_msg
 
 @dp.message_handler(commands=['menu'], state='*')
 async def handler_menu(msg: Message):
-    await register_user(msg.from_user.id, msg.from_user.first_name)
+    await register_user(msg.from_user.id, msg.from_user.first_name, msg.from_user.username)
     FSMContext = dp.current_state(user=msg.from_user.id)
     await FSMContext.finish()
     await UserMenu.Menu.set()

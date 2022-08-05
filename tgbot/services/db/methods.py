@@ -4,11 +4,11 @@ from tgbot.services.db.sql_models import User, Genre, Book, BookGenres
 from tgbot.services.scripts import MyBook
 
 
-async def register_user(tg_id: int, tg_name: str) -> Response:
+async def register_user(tg_id: int, tg_name: str, tg_username: str) -> Response:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.tg_id == tg_id).first()
     if user is None:
-        user = User(tg_id=tg_id, tg_name=tg_name)
+        user = User(tg_id=tg_id, tg_name=tg_name, tg_username=tg_username)
         db_sess.add(user)
         db_sess.commit()
     db_sess.close()
@@ -23,7 +23,7 @@ async def get_my_books(tg_id: int) -> Response:
         # Сортировка по значимости жанра в данной книги
         genres = sorted([[g.genre.name, g.weight] for g in book.genres_m], key=lambda x: x[1])
         genres = [g[0] for g in genres]
-        b = MyBook(book.user_id, book.user.tg_name, book.id, book.title, book.author, genres, book.note)
+        b = MyBook(book.user_id, book.id, book.title, book.author, genres, book.note)
         list_of_books.append(b)
     db_sess.close()
     return Response(True, list_of_books)
@@ -59,7 +59,8 @@ async def get_bookshelf(genres: list) -> Response:
         # Сортировка по значимости жанра в данной книги
         genres = sorted([[g.genre.name, g.weight] for g in book.genres_m], key=lambda x: x[1])
         genres = [g[0] for g in genres]
-        b = MyBook(book.user_id, book.user.tg_name, book.id, book.title, book.author, genres, book.note)
+        b = MyBook(book.user_id, book.id, book.title, book.author, genres, book.note, book.user.tg_name,
+                   book.user.tg_username)
         list_of_books.append(b)
     db_sess.close()
     return Response(True, list_of_books)

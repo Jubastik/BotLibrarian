@@ -3,7 +3,7 @@ from aiogram.types import CallbackQuery
 from bot import dp, bot
 from tgbot.FSM.states import UserMenu, Bookshelf
 from tgbot.handlers.menu import query_menu
-from tgbot.keyboards.inline.markup import get_markup_my_books, get_markup_bookshelf, get_markup_add_genre_bookshelf
+from tgbot.keyboards.inline.markup import get_markup_add_genre_bookshelf
 from tgbot.services.db.methods import get_bookshelf, get_all_genres, get_genre_name
 from tgbot.services.scripts import update_msg
 
@@ -58,8 +58,8 @@ async def handler_show_bookshelf(call: CallbackQuery):
         if num == 0:
             text.append(f'Подходящие книги:')
         text.append(
-            f'ID: {book.id} \nНазвание: {book.title} \nАвтор: {book.author} \n'
-            f'Жанры: {";".join(book.genres)} \nЗаписка от дарителя: {book.note}')
+            f'Даритель: @{book.tg_username} \nНазвание: {book.title} \nАвтор: {book.author} \n'
+            f'Жанры: {"; ".join(book.genres)} \nЗаписка от дарителя: {book.note}')
         await bot.send_message(call.from_user.id, text="\n".join(text))
     msg = await bot.send_message(call.from_user.id, text='Ты милашка)')
     async with FSMContext.proxy() as FSMdata:

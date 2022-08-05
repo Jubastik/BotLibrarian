@@ -13,6 +13,6 @@ async def errors_handler_response(update, error):
 
 @dp.errors_handler(exception=Exception)
 async def errors_handler_all(update, error):
-    chat_id = os.getenv("FEEDBACK_GROUP_ID")
-    await bot.send_message(chat_id, f'Ошибка: {update}\nТекст: {error}')
-    return False
+    if os.getenv('SERVER_MODE', 'False') == 'True':
+        chat_id = os.getenv("FEEDBACK_GROUP_ID")
+        await bot.send_message(chat_id, f'Ошибка: {update}\nТекст: {error}')
